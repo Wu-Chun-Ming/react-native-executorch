@@ -13,7 +13,8 @@ import {
 } from '../types/llm';
 import { parseToolCall } from '../utils/llm';
 import { Logger } from '../common/Logger';
-import { readAsStringAsync } from 'expo-file-system/legacy';
+// import { readAsStringAsync } from 'expo-file-system/legacy';
+import * as FileSystem from 'expo-file-system';
 
 export class LLMController {
   private nativeModule: any;
@@ -128,7 +129,7 @@ export class LLMController {
       }
 
       this.tokenizerConfig = JSON.parse(
-        await readAsStringAsync('file://' + tokenizerConfigPath!)
+        await FileSystem.readAsStringAsync('file://' + tokenizerConfigPath!)
       );
       this.nativeModule = global.loadLLM(modelPath, tokenizerPath);
       this.isReadyCallback(true);

@@ -17,7 +17,8 @@ import {
   AudioRecorder,
   AudioContext,
 } from 'react-native-audio-api';
-import * as FileSystem from 'expo-file-system/legacy';
+// import * as FileSystem from 'expo-file-system/legacy';
+import * as FileSystem from 'expo-file-system';
 import SWMIcon from '../assets/swm_icon.svg';
 import DeviceInfo from 'react-native-device-info';
 

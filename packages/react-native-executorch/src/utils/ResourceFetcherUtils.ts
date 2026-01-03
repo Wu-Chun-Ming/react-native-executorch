@@ -6,11 +6,12 @@ import { Logger } from '../common/Logger';
 /**
  * @internal
  */
-import {
-  getInfoAsync,
-  makeDirectoryAsync,
-  type DownloadResumable,
-} from 'expo-file-system/legacy';
+// import {
+//   getInfoAsync,
+//   makeDirectoryAsync,
+//   type DownloadResumable,
+// } from 'expo-file-system';
+import * as FileSystem from 'expo-file-system';
 
 export const enum HTTP_CODE {
   OK = 200,
@@ -42,7 +43,7 @@ export interface ResourceSourceExtended {
 }
 
 export interface DownloadResource {
-  downloadResumable: DownloadResumable;
+  downloadResumable: FileSystem.DownloadResumable;
   status: DownloadStatus;
   extendedInfo: ResourceSourceExtended;
 }
@@ -167,12 +168,12 @@ export namespace ResourceFetcherUtils {
 
   export async function createDirectoryIfNoExists() {
     if (!(await checkFileExists(RNEDirectory))) {
-      await makeDirectoryAsync(RNEDirectory, { intermediates: true });
+      await FileSystem.makeDirectoryAsync(RNEDirectory, { intermediates: true });
     }
   }
 
   export async function checkFileExists(fileUri: string) {
-    const fileInfo = await getInfoAsync(fileUri);
+    const fileInfo = await FileSystem.getInfoAsync(fileUri);
     return fileInfo.exists;
   }
 

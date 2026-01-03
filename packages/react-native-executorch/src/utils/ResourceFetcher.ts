@@ -28,17 +28,18 @@
  *   - Automatically processes subsequent downloads when `.next` contains a valid resource
  */
 
-import {
-  cacheDirectory,
-  copyAsync,
-  createDownloadResumable,
-  moveAsync,
-  FileSystemSessionType,
-  writeAsStringAsync,
-  EncodingType,
-  deleteAsync,
-  readDirectoryAsync,
-} from 'expo-file-system/legacy';
+// import {
+//   cacheDirectory,
+//   copyAsync,
+//   createDownloadResumable,
+//   moveAsync,
+//   FileSystemSessionType,
+//   writeAsStringAsync,
+//   EncodingType,
+//   deleteAsync,
+//   readDirectoryAsync,
+// } from 'expo-file-system/legacy';
+import * as FileSystem from 'expo-file-system';
 import { Asset } from 'expo-asset';
 import { Platform } from 'react-native';
 import { RNEDirectory } from '../constants/directories';
@@ -204,7 +205,7 @@ export class ResourceFetcher {
             `Failed to fetch resource from '${resource.extendedInfo.uri}'`
           );
         }
-        await moveAsync({
+        await FileSystem.moveAsync({
           from: resource.extendedInfo.cacheFileUri,
           to: resource.extendedInfo.fileUri,
         });
@@ -254,7 +255,7 @@ export class ResourceFetcher {
   }
 
   static async listDownloadedFiles() {
-    const files = await readDirectoryAsync(RNEDirectory);
+    const files = await FileSystem.readDirectoryAsync(RNEDirectory);
     return files.map((file) => `${RNEDirectory}${file}`);
   }
 
@@ -270,7 +271,7 @@ export class ResourceFetcher {
       );
       const fileUri = `${RNEDirectory}${filename}`;
       if (await ResourceFetcherUtils.checkFileExists(fileUri)) {
-        await deleteAsync(fileUri);
+        await FileSystem.deleteAsync(fileUri);
       }
     }
   }
@@ -293,8 +294,8 @@ export class ResourceFetcher {
     }
 
     await ResourceFetcherUtils.createDirectoryIfNoExists();
-    await writeAsStringAsync(path, jsonString, {
-      encoding: EncodingType.UTF8,
+    await FileSystem.writeAsStringAsync(path, jsonString, {
+      encoding: FileSystem.EncodingType.UTF8,
     });
 
     return ResourceFetcherUtils.removeFilePrefix(path);
@@ -325,7 +326,7 @@ export class ResourceFetcher {
       return ResourceFetcherUtils.removeFilePrefix(fileUri);
     }
     await ResourceFetcherUtils.createDirectoryIfNoExists();
-    await copyAsync({
+    await FileSystem.copyAsync({
       from: asset.uri,
       to: fileUriWithType,
     });
@@ -368,17 +369,17 @@ export class ResourceFetcher {
     const uri = sourceExtended.uri!;
     const filename = ResourceFetcherUtils.getFilenameFromUri(uri);
     sourceExtended.fileUri = `${RNEDirectory}${filename}`;
-    sourceExtended.cacheFileUri = `${cacheDirectory}${filename}`;
+    sourceExtended.cacheFileUri = `${FileSystem.cacheDirectory}${filename}`;
 
     if (await ResourceFetcherUtils.checkFileExists(sourceExtended.fileUri)) {
       return ResourceFetcherUtils.removeFilePrefix(sourceExtended.fileUri);
     }
     await ResourceFetcherUtils.createDirectoryIfNoExists();
 
-    const downloadResumable = createDownloadResumable(
+    const downloadResumable = FileSystem.createDownloadResumable(
       uri,
       sourceExtended.cacheFileUri,
-      { sessionType: FileSystemSessionType.BACKGROUND },
+      { sessionType: FileSystem.FileSystemSessionType.BACKGROUND },
       ({ totalBytesWritten, totalBytesExpectedToWrite }) => {
         if (totalBytesExpectedToWrite === -1) {
           // If totalBytesExpectedToWrite is -1, it means the server does not provide content length.
@@ -407,7 +408,7 @@ export class ResourceFetcher {
     if (!result || result.status !== HTTP_CODE.OK) {
       throw new Error(`Failed to fetch resource from '${source}'`);
     }
-    await moveAsync({
+    await FileSystem.moveAsync({
       from: sourceExtended.cacheFileUri,
       to: sourceExtended.fileUri,
     });
