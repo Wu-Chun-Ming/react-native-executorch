@@ -1,0 +1,33 @@
+name: Build and Upload Package
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Build package
+        working-directory: packages/react-native-executorch
+        run: yarn prepare
+
+      - name: Create package tarball
+        working-directory: packages/react-native-executorch
+        run: yarn pack
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: react-native-executorch-build
+          path: packages/react-native-executorch/*.tgz
+          retention-days: 30
