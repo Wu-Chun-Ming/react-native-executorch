@@ -28,6 +28,7 @@
  *   - Automatically processes subsequent downloads when `.next` contains a valid resource
  */
 import type * as FileSystemTypes from 'expo-file-system';
+import { Logger } from '../common/Logger';
 
 export function importLegacyExpoFSModules() {
   let FileSystem: typeof FileSystemTypes;
@@ -35,12 +36,13 @@ export function importLegacyExpoFSModules() {
   try {
     const expoPkg = require('expo/package.json');
     const sdkVersion = expoPkg.version.split('.')[0];
-
     if (Number(sdkVersion) > 53) {
-      FileSystem = require('expo-file-system/legacy');
-    } else {
-      FileSystem = require('expo-file-system');
+      Logger.warn(
+        'For SDK versions greater than 53, please use the official react-native-executorch installation.'
+      );
     }
+
+    FileSystem = require(`expo-file-system`);
   } catch (e) {
     throw new Error('Expo must be installed to use react-native-executorch');
   }
