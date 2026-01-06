@@ -10,16 +10,21 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { useSpeechToText, WHISPER_TINY_EN } from 'react-native-executorch';
+import {
+  importLegacyExpoFSModules,
+  useSpeechToText,
+  WHISPER_TINY_EN,
+} from 'react-native-executorch';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import {
   AudioManager,
   AudioRecorder,
   AudioContext,
 } from 'react-native-audio-api';
-import * as FileSystem from 'expo-file-system/legacy';
 import SWMIcon from '../assets/swm_icon.svg';
 import DeviceInfo from 'react-native-device-info';
+
+const { cacheDirectory, downloadAsync } = importLegacyExpoFSModules();
 
 const isSimulator = DeviceInfo.isEmulatorSync();
 
@@ -56,9 +61,9 @@ export const SpeechToTextScreen = () => {
       return;
     }
 
-    const { uri } = await FileSystem.downloadAsync(
+    const { uri } = await downloadAsync(
       audioURL,
-      FileSystem.cacheDirectory + 'audio_file'
+      cacheDirectory + 'audio_file'
     );
 
     const audioContext = new AudioContext({ sampleRate: 16000 });
