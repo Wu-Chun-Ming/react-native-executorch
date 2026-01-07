@@ -60,7 +60,9 @@ export const useVerticalOCR = ({
     })();
 
     return () => {
-      controllerInstance.delete();
+      if (controllerInstance.isReady) {
+        controllerInstance.delete();
+      }
     };
   }, [
     controllerInstance,
